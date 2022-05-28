@@ -1,4 +1,7 @@
-def lcs1(X, Y , L):
+#lcs
+#**Busca la cadena de similitud mas grande
+#**usando programacion dinamica guarda los valores en una matriz de dimension 2.
+def lcs(X, Y , L):
     m = len(X)
     n = len(Y)
     for i in range(m + 1):
@@ -11,7 +14,11 @@ def lcs1(X, Y , L):
                 L[i][j] = max(L[i-1][j], L[i][j-1])
     return L
 
-def findPath(X , Y , L):
+#fpc
+#**funcion que recorre la matriz buscando la cadena de similitud mas larga
+#**dependiendo de X rellena la lista con - en las partes que no hay similitud
+#**Se uso como referencia https://www.youtube.com/watch?v=er7_2ATj-vk&t=1045s&ab_channel=jorgerodriguezc
+def fpc(X , Y , L):
     m = len(X)
     n = len(Y)
     palabra = ""
@@ -28,53 +35,8 @@ def findPath(X , Y , L):
                 n= n-1
     return palabra
 
-def borrado(X,h):
-    m = len(h)-1
-    n = len(X)-1
-    i = 0
-    cambiar = ""
-    while(m>=0):
-        while i <= n:
-            if X[i] == h[m]:
-                m-=1
-                i+=1
-            else:
-                cambiar += X[i]
-                i+=1
-    print("palabra a cambiar: ",cambiar)
-    return X
-
-def sacar(A,B,linea):  ##A -> string de inicio  ##B--> string final
-    "funcion k va a dividir la linea y borrar lo anterior"
-    lineaux = ""
-    c,flag = 0,0
-    if B == "": #Primer caso solo al inicio
-        for x in range(len(linea)):
-            if linea[x] == A:
-                print(lineaux)
-                return lineaux
-            else:
-                lineaux += linea[x]
-    elif A == "": #Segundo caso solo al final
-        for x in range(len(linea)):
-            if linea[x] == B:
-                flag =1
-            elif flag == 1:
-                lineaux += linea[x]
-    else:  #Tercer caso al medio
-        while c < len(linea):
-            """print("aca",A,B)"""
-            if linea[c] == A:
-                flag=1
-            elif linea[c] == B:
-                print(lineaux)
-                return lineaux
-            elif flag == 1:
-                lineaux += linea[c]
-            c+=1
-    print(lineaux)
-    return lineaux
-
+#creacion matriz
+##crea la matriz en la que se guardaran los valores.
 def creacion_matriz(X,Y):
     m = len(X)
     n = len(Y)
@@ -83,83 +45,105 @@ def creacion_matriz(X,Y):
         L.append([])
         for j in range(n+1):
             L[i].append(None)
-    
     ##llenado de la matriz.
     for i in range(m + 1):
         L[i][0] = 0
     for j in range(n + 1):
         L[0][j] = 0
-    L = lcs1(X,Y,L)
+    L = lcs(X,Y,L)
     return L
 
+def borrar_numero(palabra):
+    con = 0
+    while con < len(palabra):
+        if(palabra[con] == " "):
+            con += 1
+            palabra = palabra[con:]
+            return(palabra)
+        con += 1
+    return(-1)
 
-
-
-Y = "GGJAB"
-X = "GZJZAMB"
-
-"""
-Y = "Este es un texto"
-X = "Este es otro texto"
-"""
-"""
-Y = "ABCLGH"
-X = "AELFHR"
-"""
-"""
-m = len(X)
-n = len(Y)
-L = []
-for i in range(m+1):
-    L.append([])
-    for j in range(n+1):
-        L[i].append(None)
+contador_casos = 0; definitivo = ""
+num_casos = int(input())
+definitivo += str(num_casos) + "\n"
+while contador_casos < num_casos:
+    contador_output = 0
     
-##llenado de la matriz.
-for i in range(m + 1):
-    L[i][0] = 0
-for j in range(n + 1):
-    L[0][j] = 0
-L = lcs1(X,Y,L)
-"""
+    final1 = []
+    final2 = []
 
-"""
-#para ver la matriz
-for i in range(m+1):
-    print(L[i])
-"""
-L1 = creacion_matriz(X,Y)
-h1 = findPath(X,Y,L1)
-h1 = list(reversed(h1))
-print(h1)
+    substring1 = ""
+    substring2 = ""
 
-L2 = creacion_matriz(Y,X)
-h2 = findPath(Y,X,L2)
-h2 = list(reversed(h2))
-print(h2)
-##Falta revisar el primero e ir borrando
-for i in range(len(h1)+1):
-    #print(i)
-    if(h1[i-1] == "-"):
-        print(X[i-1])
+    palabra1 = input()
+    palabra2 = input()
 
+    Y = borrar_numero(palabra1)
+    X = borrar_numero(palabra2)
 
+    L1 = creacion_matriz(X,Y)
+    h1 = fpc(X,Y,L1)
+    h1 = list(reversed(h1))
 
+    L2 = creacion_matriz(Y,X)
+    h2 = fpc(Y,X,L2)
+    h2 = list(reversed(h2))
 
-"""
-c = 0
-print(h)
-while c <= len(h)-1:
-    if c == 0:
-        sacar(h[0],"",X)
-        sacar(h[0],"",Y)
-    if c == len(h)-1:
-        sacar("",h[c],X)
-        sacar("",h[c],Y)
+    for i in range(len(h1)):
+        #print("letra",h1[i])
+        if substring1 != "" and h1[i] != "-":
+            #print("sub append", substring1)
+            final1.append(substring1)
+            substring1 = ""
+        elif h1[i] != "-":
+            substring1 = ""
+        else:
+            substring1 += X[i]
+            #print("1", substring1)
+    if substring1 != "":
+        final1.append(substring1)
+
+    for i in range(len(h2)):
+        #print("letra",h2[i])
+        if substring2 != "" and h2[i] != "-":
+            #print("sub append", substring2)
+            final2.append(substring2)
+            substring2 = ""
+        elif h2[i] != "-":
+            substring2 = ""
+        else:
+            substring2 += Y[i]
+            #print("2", substring2)
+    if substring2 != "":
+        final2.append(substring2)
+
+    #print("finals", final2, final1)
+
+    if len(final1) > len(final2):
+        min = final2
+        definitivo += str(len(final1)) + "\n"
     else:
-        sacar(h[c],h[c+1],X)
-        sacar(h[c],h[c+1],Y)
-    c+=1
-"sacar("",h[2],X)"
-"borrado(X,h)"
-"""
+        min = final1
+        definitivo += str(len(final2)) + "\n"
+
+    for i in range(len(min)):
+        definitivo += final2[i] + " " + final1[i] + "\n"
+        #print(final2[i], final1[i])
+
+    for i in range(len(min)):
+        del final1[0]
+        del final2[0]
+
+    if len(final1) == len(final2):
+        pass
+    elif min == final2:
+        for i in final1:
+            definitivo += " " + i + "\n"
+            #print(" "+i)
+    else:
+        for i in final2:
+            definitivo += i + "\n"
+            #print(i)
+
+    contador_casos += 1
+print(definitivo)
